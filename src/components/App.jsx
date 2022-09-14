@@ -27,12 +27,10 @@ export class App extends Component {
   };
 
   async componentDidUpdate(_, prevState) {
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
+    const { page, query, images } = this.state;
+
+    if (prevState.query !== query || prevState.page !== page) {
       this.setState({ status: STATUS.PENDING });
-      const { page, query, images } = this.state;
 
       try {
         const { data } = await fetchImages(query, page);
@@ -66,6 +64,7 @@ export class App extends Component {
   };
 
   handleFormSubmit = query => {
+    if (this.state.query === query) return;
     this.setState({ ...INIT_STATE, query });
   };
 

@@ -5,15 +5,15 @@ const SEARCH_PARAMS = new URLSearchParams({
   key: '29138945-719dfadf34447ae392f9f2b7e',
   image_type: 'photo',
   orientation: 'horizontal',
-  safesearch: 'true',
   per_page: `${PER_PAGE}`,
+  safesearch: 'true',
 });
 
-export async function fetchImages(query, page) {
-  SEARCH_PARAMS.append('q', query);
-  SEARCH_PARAMS.append('page', page);
+export async function fetchImages(query = '', page = 1) {
   try {
-    const response = await axios.get(`${BASE_URL}?${SEARCH_PARAMS}`);
+    const response = await axios.get(
+      `${BASE_URL}?${SEARCH_PARAMS}&q=${query}&page=${page}`
+    );
     return response;
   } catch (error) {
     throw new Error(error);
