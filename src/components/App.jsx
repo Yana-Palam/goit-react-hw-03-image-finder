@@ -1,8 +1,6 @@
 import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import Button from 'components/Button';
 import Loader from 'components/Loader';
 import Searchbar from './Searchbar';
@@ -28,7 +26,7 @@ export class App extends Component {
     selectedImage: null,
   };
 
-  componentDidUpdate(_, prevState) {
+  async componentDidUpdate(_, prevState) {
     if (
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
@@ -36,21 +34,32 @@ export class App extends Component {
       this.setState({ status: STATUS.PENDING });
       const { page, query, images } = this.state;
 
-      fetchImages(query, page)
-        .then(data => {
-          this.setState({
-            status: STATUS.RESOLVED,
-            images: page > 1 ? [...images, ...data.hits] : [...data.hits],
-            total: data.totalHits,
-          });
-          page === 1 && toast(` Hooray! We found ${data.totalHits} images.`);
-        })
-        .catch(error => {
-          this.setState({ status: STATUS.REJECTED });
-          toast.error(error.message);
-        });
+      try {
+        const { data } = await fetchImages(query, page);
+        this.handleData(data, page, images);
+      } catch (error) {
+        this.setState({ status: STATUS.REJECTED });
+        toast.error(error.message);
+      }
     }
   }
+
+  handleData = (data, page, images) => {
+    if (data.hits.length === 0) {
+      this.setState({ status: STATUS.REJECTED });
+      return toast.error(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
+
+    this.setState({
+      status: STATUS.RESOLVED,
+      images: page > 1 ? [...images, ...data.hits] : [...data.hits],
+      total: data.totalHits,
+    });
+
+    page === 1 && toast(` Hooray! We found ${data.totalHits} images.`);
+  };
 
   handleClick = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));

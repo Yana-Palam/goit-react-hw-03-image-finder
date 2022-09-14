@@ -7,14 +7,15 @@ const ImageGallery = ({ images, showModal }) => {
   return (
     <List>
       {images.map(image => {
+        const { webformatURL, tags, id } = image;
         return (
           <ImageGalleryItem
             onClick={() => {
               showModal(image);
             }}
-            src={image.webformatURL}
-            name={image.tags}
-            key={image.id}
+            src={webformatURL}
+            name={tags}
+            key={id}
           />
         );
       })}

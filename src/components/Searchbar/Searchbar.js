@@ -1,10 +1,7 @@
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-import { Component } from 'react';
 import { BsSearch } from 'react-icons/bs';
-
 import { Header, SearchForm, Button, Input } from './Searchbar.styled';
 
 class Searchbar extends Component {
@@ -15,6 +12,7 @@ class Searchbar extends Component {
   static propTypes = {
     onSubmit: PropTypes.func.isRequired,
   };
+
   handleChange = e => {
     const { value } = e.currentTarget;
     this.setState({ query: value.toLowerCase() });
@@ -56,9 +54,5 @@ class Searchbar extends Component {
     );
   }
 }
-
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
 
 export default Searchbar;
