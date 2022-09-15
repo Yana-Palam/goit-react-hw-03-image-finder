@@ -44,6 +44,7 @@ export class App extends Component {
 
   handleData = (fetchData, page, images) => {
     const data = imageMapper(fetchData.data.hits);
+    const fetchTotal = fetchData.data.totalHits;
     if (data.length === 0) {
       this.setState({ status: STATUS.REJECTED });
       return toast.error(
@@ -54,10 +55,10 @@ export class App extends Component {
     this.setState({
       status: STATUS.RESOLVED,
       images: page > 1 ? [...images, ...data] : [...data],
-      total: fetchData.data.totalHits,
+      total: fetchTotal,
     });
 
-    page === 1 && toast(` Hooray! We found ${data.totalHits} images.`);
+    page === 1 && toast(` Hooray! We found ${fetchTotal} images.`);
   };
 
   handleClick = () => {
