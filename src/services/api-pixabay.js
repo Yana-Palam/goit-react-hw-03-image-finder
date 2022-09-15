@@ -5,8 +5,8 @@ const SEARCH_PARAMS = new URLSearchParams({
   key: '29138945-719dfadf34447ae392f9f2b7e',
   image_type: 'photo',
   orientation: 'horizontal',
-  per_page: `${PER_PAGE}`,
   safesearch: 'true',
+  per_page: `${PER_PAGE}`,
 });
 
 export async function fetchImages(query = '', page = 1) {

@@ -7,6 +7,7 @@ import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import Modal from './Modal';
 import { fetchImages, PER_PAGE } from 'services/api-pixabay';
+import imageMapper from 'utils/mapper';
 
 const STATUS = {
   IDLE: 'idle',
@@ -22,7 +23,6 @@ export class App extends Component {
     ...INIT_STATE,
     status: STATUS.IDLE,
     total: 500,
-    showModal: false,
     selectedImage: null,
   };
 
@@ -33,8 +33,8 @@ export class App extends Component {
       this.setState({ status: STATUS.PENDING });
 
       try {
-        const { data } = await fetchImages(query, page);
-        this.handleData(data, page, images);
+        const fetchData = await fetchImages(query, page);
+        this.handleData(fetchData, page, images);
       } catch (error) {
         this.setState({ status: STATUS.REJECTED });
         toast.error(error.message);
@@ -42,8 +42,9 @@ export class App extends Component {
     }
   }
 
-  handleData = (data, page, images) => {
-    if (data.hits.length === 0) {
+  handleData = (fetchData, page, images) => {
+    const data = imageMapper(fetchData.data.hits);
+    if (data.length === 0) {
       this.setState({ status: STATUS.REJECTED });
       return toast.error(
         'Sorry, there are no images matching your search query. Please try again.'
@@ -52,8 +53,8 @@ export class App extends Component {
 
     this.setState({
       status: STATUS.RESOLVED,
-      images: page > 1 ? [...images, ...data.hits] : [...data.hits],
-      total: data.totalHits,
+      images: page > 1 ? [...images, ...data] : [...data],
+      total: fetchData.data.totalHits,
     });
 
     page === 1 && toast(` Hooray! We found ${data.totalHits} images.`);
@@ -70,18 +71,16 @@ export class App extends Component {
 
   handleModal = image => {
     this.setState({
-      showModal: true,
       selectedImage: image,
     });
   };
 
   onCloseModal = () => {
-    this.setState({ showModal: false });
+    this.setState({ selectedImage: null });
   };
 
   render() {
-    const { images, status, page, total, showModal, selectedImage } =
-      this.state;
+    const { images, status, page, total, selectedImage } = this.state;
 
     return (
       <div
@@ -98,7 +97,7 @@ export class App extends Component {
             {page < Math.floor(total / PER_PAGE) && (
               <Button onClick={this.handleClick} text="Load more"></Button>
             )}
-            {showModal && (
+            {selectedImage && (
               <Modal
                 onCloseModal={this.onCloseModal}
                 src={selectedImage.largeImageURL}

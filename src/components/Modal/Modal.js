@@ -10,23 +10,30 @@ class Modal extends Component {
   };
 
   componentDidMount() {
-    document.addEventListener('keydown', this.handleClose);
+    document.addEventListener('keydown', this.closeByEsc);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleClose);
+    document.removeEventListener('keydown', this.closeByEsc);
   }
 
-  handleClose = e => {
+  closeByEsc = e => {
     const { onCloseModal } = this.props;
-    if (e.currentTarget === e.target || e.code === 'Escape') {
+    if (e.code === 'Escape') {
+      onCloseModal();
+    }
+  };
+
+  closeByBackdrop = e => {
+    const { onCloseModal } = this.props;
+    if (e.currentTarget === e.target) {
       onCloseModal();
     }
   };
   render() {
     const { src, name } = this.props;
     return (
-      <Overlay onClick={this.handleClose}>
+      <Overlay onClick={this.closeByBackdrop}>
         <ModalWrapper>
           <img src={src} alt={name} />
         </ModalWrapper>
